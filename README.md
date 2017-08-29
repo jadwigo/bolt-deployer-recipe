@@ -2,7 +2,13 @@
 
 This is a recipe on how to set up [deployer](https://deployer.org/) to manage a [bolt](https://bolt.cm/)
 
-## Basic setup
+## Basic usage
+
+Run `dep deploy` on the console of your machin in the instalaltion directory of this repository.
+
+This receipe will also make database snapshots of each deployment, that will be rolled back on each `dep rollback`
+
+## Basic installation
 
 ### On your machine
 
