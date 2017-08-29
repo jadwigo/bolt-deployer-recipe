@@ -33,7 +33,7 @@ Then run `git clone git@github.com:jadwigo/bolt-deployer-recipe.git my_directory
 
 Make sure the `hosts.yml`, `.my.cnf` and `deploy.php` files exist
 
-Optionally create `.bolt.yml` and `config_local.yml` files in the same directory.
+Optionally create `shared/.bolt.yml` and `shared/app/config/config_local.yml` files.
 
 ### On example.com
 
