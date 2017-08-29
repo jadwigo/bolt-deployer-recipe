@@ -67,7 +67,6 @@ Your `hosts.yml` should look something like this:
 example.com:
     hostname: example.com
     user: your_shell_user
-    configFile: ~/.ssh/config
     stage: production
     roles: site
     application: your_app_name
