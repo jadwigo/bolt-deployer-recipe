@@ -29,6 +29,8 @@ Make sure you can ssh connect passwordless (using the account `your_shell_user`)
 
 Also make sure the database user `your_mysql_user` user is allowed to create mysql databases and tables in those databases, and perform mysqldump.
 
+It is probably best to create a specific deployment user account on the server and a specific backup administrator account in the database for these.
+
 ## Configuration files
 
 ### hosts.yml
@@ -65,9 +67,43 @@ The `.my.cnf` file will be copied to the server with the first deploy. This is n
 
 ```ini
 [client]
-user="your_mysql_user"
-password="your_password"
+user="your_mysql_backup_user"
+password="your_mysql_admin_password"
 ```
 
-Replace the `your_mysql_user` and `your_password` with your own variables before the first deploy.
+Replace the `your_mysql_backup_user` and `your_mysql_backup_user_password` with your own variables before the first deploy.
 
+## Bolt configuration
+
+There are some tweaks to the bolt configuration that you can prepare beforehand. Create the folder `/your/root/path/for/the/app/shared` and place the following files there:
+ - `/your/root/path/for/the/app/shared/.bolt.yml`
+ - `/your/root/path/for/the/app/shared/shared/app/config/config_local.yml`
+
+You can also setup local configuration files for each extension as needed.
+`/your/root/path/for/the/app/shared/shared/app/config/extensions/*_local.yml`
+
+### shared/.bolt.yml
+
+You should set the paths for the cache directory, and the files directory in the `.bolt.yml` file.
+
+```yml
+paths:
+  cache: /your/root/path/for/the/app/shared/cache
+  files: /your/root/path/for/the/app/shares/files
+```
+
+As above, the path `/your/root/path/for/the/app/` should be adapted for your situation.
+
+### shared/app/config/config_local.yml
+
+The `config_local.yml` should set the database credentials for your site. For the database suer you should have a separate account `your_mysql_user` that is different from `your_mysql_backup_user`.
+
+```yml
+database:
+  driver: mysql
+  databasename: your_db_name
+  username: your_mysql_user
+  password: your_mysql_user_password
+
+canonical: example.com
+```
