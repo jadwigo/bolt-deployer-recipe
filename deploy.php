@@ -42,61 +42,6 @@ set('bin/mysqladmin', function () {
 
 
 /**
- * Custom Tasks
- */
-task('test', function () {
-    writeln('<info>➤</info> Current deploy path is {{deploy_path}}');
-    writeln('<info>➤</info> Current release path is {{release_path}}');
-    $releases_list = get('releases_list');
-    set('releases_list', $releases_list);
-    if(!empty($releases_list)) {
-        set('current_release', $releases_list[0]);
-    } else {
-        set('current_release', 0);
-    }
-    writeln("<info>➤</info> current_release: {{current_release}}");
-    writeln('<info>➤</info> Next release name is {{release_name}}');
-    invoke('config:dump');
-})->desc('Test if I am working.');
-
-task('past', function () {
-    $releases_list = get('releases_list');
-    set('releases_list', $releases_list);
-    if(count($releases_list)>1) {
-        set('previous_release', $releases_list[1]);
-        writeln("Previous release found {{previous_release}}");
-    } else {
-        set('previous_release', false);
-        writeln("Previous release missing");
-        invoke('config:dump');
-    }
-})->desc('Show info about releases');
-
-task('bolt:vendors', function() {
-    run('cd {{release_path}} && {{bin/composer}} {{composer_options}} --ignore-platform-reqs');
-})->desc('Update bolt vendors');
-
-task('bolt:extensions', function() {
-    run('cd {{release_path}}/extensions && {{bin/composer}} {{composer_options}} --ignore-platform-reqs ');
-})->desc('Install extension updates');
-
-task('bolt:localconfig', function() {
-    writeln('<info>➤</info> Copy bolt localconfig');
-    within('{{deploy_path}}', function() {
-        run('cp {{deploy_path}}/shared/app/config/config_local.yml {{release_path}}/app/config/.', [ 'tty' => true ]);
-        run('cp {{deploy_path}}/shared/app/config/extensions/*_local.yml {{release_path}}/app/config/extensions/.', [ 'tty' => true ]);
-        run('chmod -R a+rw {{release_path}}/app/config', [ 'tty' => true ]);
-    });
-})->desc('Copy shared config files to current release.');
-
-task('bolt:fix_access', function() {
-    writeln('<info>➤</info> Fix access control');
-    within('{{release_path}}', function() {
-        run('sudo chmod -R a+rw app/config public/thumbs', [ 'tty' => true ]);
-    });
-})->desc('Set rw access control for all directories');
-
-/**
  * Return backup path.
  */
 set('backup_path', function () {
@@ -105,7 +50,7 @@ set('backup_path', function () {
             writeln('<info>➤</info> setting up snapshots: {{snapshots_dir}}');
             run("mkdir {{deploy_path}}/{{snapshots_dir}}");
             upload('.my.cnf', '{{deploy_path}}/{{snapshots_dir}}/');
-        }); 
+        });
     }
     if (!test("[ -f {{deploy_path}}/{{snapshots_dir}}/.my.cnf ]")) {
         upload('.my.cnf', '{{deploy_path}}/{{snapshots_dir}}/');
@@ -122,6 +67,105 @@ set('backup_path', function () {
     return $link;
 });
 
+/**
+ * Custom Tasks
+ */
+task('test:current', function () {
+    writeln('<info>➤</info> Current deploy path is {{deploy_path}}');
+    writeln('<info>➤</info> Current release path is {{release_path}}');
+    $releases_list = get('releases_list');
+    set('releases_list', $releases_list);
+    if(!empty($releases_list)) {
+        set('current_release', $releases_list[0]);
+    } else {
+        set('current_release', 0);
+    }
+    writeln("<info>➤</info> current_release: {{current_release}}");
+    writeln('<info>➤</info> Next release name is {{release_name}}');
+})->desc('Show info about current releases.');
+
+task('test:past', function () {
+    $releases_list = get('releases_list');
+    set('releases_list', $releases_list);
+    if(count($releases_list)>1) {
+        set('previous_release', $releases_list[1]);
+        writeln("Previous release found {{previous_release}}");
+    } else {
+        set('previous_release', false);
+        writeln("Previous release missing");
+    }
+})->desc('Show info about past releases');
+
+
+/**
+ * Bolt specific Tasks
+ */
+task('bolt:init_shared', function() {
+    if (!file_exists (__DIR__ . '/.bolt.yml')) {
+      die('Please create "' . __DIR__ . '/.bolt.yml" before continuing.' . "\n");
+    }
+    if (!file_exists (__DIR__ . '/config_local.yml')) {
+      die('Please create "' . __DIR__ . '/config_local.yml" before continuing.' . "\n");
+    }
+    if (!test("[ -d {{deploy_path}}/shared/app/config ]")) {
+        writeln('<info>➤</info> setting up shared config paths');
+        run("mkdir -p {{deploy_path}}/shared/app/config");
+        if (!test("[ -f {{deploy_path}}/shared/.bolt.yml ]")) {
+            writeln('<info>➤</info> uploading .bolt.yml');
+            upload('.bolt.yml', "{{deploy_path}}/shared/");
+        }
+        if (!test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
+            writeln('<info>➤</info> uploading config_local.yml');
+            upload('config_local.yml',"{{deploy_path}}/shared/app/config/");
+        }
+    } else {
+        writeln('<info>➤</info> shared config paths already exist');
+        if (!test("[ -f {{deploy_path}}/shared/.bolt.yml ]")) {
+            writeln('<info>➤</info> uploading .bolt.yml');
+            upload('.bolt.yml', "{{deploy_path}}/shared/");
+        } else {
+            writeln('<info>➤</info> .bolt.yml already exists');
+        }
+        if (!test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
+            writeln('<info>➤</info> uploading config_local.yml');
+            upload('config_local.yml',"{{deploy_path}}/shared/app/config/");
+        } else {
+            writeln('<info>➤</info> config_local.yml already exists');
+        }
+    }
+})->desc('Prepare shared configuration files and folders.');
+
+task('bolt:vendors', function() {
+    run('cd {{release_path}} && {{bin/composer}} {{composer_options}} --ignore-platform-reqs');
+})->desc('Update bolt vendors');
+
+task('bolt:extensions', function() {
+    run('cd {{release_path}}/extensions && {{bin/composer}} {{composer_options}} --ignore-platform-reqs ');
+})->desc('Install extension updates');
+
+task('bolt:localconfig', function() {
+    writeln('<info>➤</info> Copy bolt localconfig');
+    within('{{deploy_path}}', function() {
+        if (test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
+            run('cp {{deploy_path}}/shared/app/config/config_local.yml {{release_path}}/app/config/.', [ 'tty' => true ]);
+        }
+        if (test("[ -d {{deploy_path}}/shared/app/config/extensions ]")) {
+            run('cp {{deploy_path}}/shared/app/config/extensions/*_local.yml {{release_path}}/app/config/extensions/.', [ 'tty' => true ]);
+        }
+        run('chmod -R a+rw {{release_path}}/app/config', [ 'tty' => true ]);
+    });
+})->desc('Copy shared config files to current release.');
+
+task('bolt:fix_access', function() {
+    writeln('<info>➤</info> Fix access control');
+    within('{{release_path}}', function() {
+        run('sudo chmod -R a+rw app/config public/thumbs', [ 'tty' => true ]);
+    });
+})->desc('Set rw access control for all directories');
+
+/**
+ * Database tasks
+ */
 task('db:test', function () {
     writeln('<info>➤</info> db test');
     writeln('<info>➤</info> release path: {{current_path}}');
