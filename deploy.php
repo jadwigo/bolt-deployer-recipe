@@ -16,8 +16,6 @@ if (!file_exists (__DIR__ . '/.my.cnf')) {
  */
 inventory('hosts.yml');
 
-
-set('host', 'guust');
 set('default_stage', 'production');
 
 /**
