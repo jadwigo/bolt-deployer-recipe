@@ -107,3 +107,9 @@ database:
 
 canonical: example.com
 ```
+
+The local configuration will be copied to the current release, so credentials do not need to be stored in git repositories.
+
+### Local extension configuration
+
+All local configuration files following the pattern `config/extensions/{extension}.{namespace}_local.yml` will be copied to the current release, so credentials do not need to be stored in git repositories.
