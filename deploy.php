@@ -112,13 +112,11 @@ task('bolt:init_shared', function() {
         run("mkdir -p {{deploy_path}}/shared/app/config/extension");
         if (!test("[ -f {{deploy_path}}/shared/.bolt.yml ]")) {
             writeln('<info>➤</info> uploading .bolt.yml');
-            upload('shared/',"{{deploy_path}}/shared");
+            upload('shared/.bolt.yml', "{{deploy_path}}/shared/");
         }
         if (!test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
             writeln('<info>➤</info> uploading config_local.yml');
-            upload('shared/',"{{deploy_path}}/shared");
-        } else {
-            writeln('<info>➤</info> uploading config_local.yml');
+            upload('shared/app/config/',"{{deploy_path}}/shared/app/config");
         }
     } else {
         writeln('<info>➤</info> shared config paths already exist');
