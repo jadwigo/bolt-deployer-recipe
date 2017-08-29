@@ -29,7 +29,11 @@ On the console you can run `dep list` to see the currently available commands.
 ### On your machine
 
 Install deployer from https://deployer.org/ on your machine.
+Install this repository with `git clone git@github.com:jadwigo/bolt-deployer-recipe.git ny_directory` and `cs my_directory` to get into the correct place.
+
 Make sure the `hosts.yml`, `.my.cnf` and `deploy.php` files exist
+
+Optionally you can create a `.bolt.yml` and `config_local.yml` file in the same directory.
 
 ### On example.com
 
