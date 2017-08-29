@@ -29,6 +29,8 @@ The root directory (for Bolt 3 and up) usually is `/your/root/path/for/the/app/c
 
 Make sure you can ssh connect passwordless (using the account `your_shell_user`) to your `yourhost.com`, and that `your_shell_user` has _passwordless sudo_ enabled **(this is required by deployer)**.
 
+Also set-up the account `your_shell_user` with the correct ssh keys to acces your git repository. See: https://deployer.org/docs/advanced/deploy-and-git for more information.
+
 Also make sure the database user `your_mysql_user` user is allowed to create mysql databases and tables in those databases, and perform mysqldump.
 
 It is probably best to create a specific deployment user account on the server and a specific backup administrator account in the database for these.
