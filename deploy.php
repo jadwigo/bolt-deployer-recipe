@@ -101,34 +101,34 @@ task('test:past', function () {
  * Bolt specific Tasks
  */
 task('bolt:init_shared', function() {
-    if (!file_exists (__DIR__ . '/.bolt.yml')) {
-      die('Please create "' . __DIR__ . '/.bolt.yml" before continuing.' . "\n");
+    if (!file_exists (__DIR__ . '/shared/.bolt.yml')) {
+      die('Please create "' . __DIR__ . '/shared/.bolt.yml" before continuing.' . "\n");
     }
-    if (!file_exists (__DIR__ . '/config_local.yml')) {
-      die('Please create "' . __DIR__ . '/config_local.yml" before continuing.' . "\n");
+    if (!file_exists (__DIR__ . '/shared/app/config/config_local.yml')) {
+      die('Please create "' . __DIR__ . '/shared/app/config/config_local.yml" before continuing.' . "\n");
     }
     if (!test("[ -d {{deploy_path}}/shared/app/config ]")) {
         writeln('<info>➤</info> setting up shared config paths');
-        run("mkdir -p {{deploy_path}}/shared/app/config");
+        run("mkdir -p {{deploy_path}}/shared/app/config/extension");
         if (!test("[ -f {{deploy_path}}/shared/.bolt.yml ]")) {
             writeln('<info>➤</info> uploading .bolt.yml');
-            upload('.bolt.yml', "{{deploy_path}}/shared/");
+            upload('shared/.bolt.yml', "{{deploy_path}}/shared/");
         }
         if (!test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
             writeln('<info>➤</info> uploading config_local.yml');
-            upload('config_local.yml',"{{deploy_path}}/shared/app/config/");
+            upload('shared/app/config/',"{{deploy_path}}/shared/app/config");
         }
     } else {
         writeln('<info>➤</info> shared config paths already exist');
         if (!test("[ -f {{deploy_path}}/shared/.bolt.yml ]")) {
             writeln('<info>➤</info> uploading .bolt.yml');
-            upload('.bolt.yml', "{{deploy_path}}/shared/");
+            upload('shared/.bolt.yml', "{{deploy_path}}/shared/");
         } else {
             writeln('<info>➤</info> .bolt.yml already exists');
         }
         if (!test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
             writeln('<info>➤</info> uploading config_local.yml');
-            upload('config_local.yml',"{{deploy_path}}/shared/app/config/");
+            upload('shared/app/config/',"{{deploy_path}}/shared/app/config");
         } else {
             writeln('<info>➤</info> config_local.yml already exists');
         }
