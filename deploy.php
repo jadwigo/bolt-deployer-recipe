@@ -180,7 +180,7 @@ task('db:restore', function () {
                 run("{{bin/mysql}} --defaults-extra-file={{backup_path}}/.my.cnf -e 'DROP TABLE IF EXISTS {{mysql_db}}.{{table}}; RENAME TABLE {{mysql_db}}_temp.{{table}} TO {{mysql_db}}.{{table}};'");
             }
             // cleanup the temporary database
-            run('{{bin/mysqladmin}} -u {{mysql_user}} -p{{mysql_pass}} -f drop {{mysql_db}}_temp');
+            run('{{bin/mysqladmin}} --defaults-extra-file={{backup_path}}/.my.cnf -f drop {{mysql_db}}_temp');
             // writeln('deploypath:{{deploy_path}} releasepath:{{release_path}} next:{{release_name}} prev:{{previous_release}} {{dumpfile}}');
         } else {
             writeln('<fg=red>✘</fg=red><fg=yellow> restore failed: {{dumpfile}} not found</fg=yellow>');
