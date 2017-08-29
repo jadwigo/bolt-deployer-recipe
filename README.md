@@ -1,14 +1,28 @@
 # How to setup a deployer bolt site
 
-This is a recipe on how to set up [deployer](https://deployer.org/) to manage a [bolt](https://bolt.cm/)
+This is a recipe on how to set up [deployer](https://deployer.org/) to manage a [bolt](https://bolt.cm/) site.
 
 ## Basic usage
 
-Run `dep deploy` on the console of your machin in the instalaltion directory of this repository.
+### Deploy a site: dep deploy
+
+After installation of this receipe you can run `dep deploy` on the console of your machine from the current installation directory of this recipe.
+
+### Rollback a deploy: dep rollback
 
 This receipe will also make database snapshots of each deployment, that will be rolled back on each `dep rollback`
 
 The database snaphots will not be cleaned up at the moment, so even older database snapshots than the `keep_releases` amount will stay available unless you remove them manually.
+
+### Initial creation of shared files: dep bolt:init_shared
+
+You can setup the shared files needed for a basic bolt installation by running `dep bolt:init_shared`. This will copy `.bolt.yml` and `config_local.yml` to the correct place on the server.
+
+You can also create these files manually on your server.
+
+### More commands
+
+On the console you can run `dep list` to see the currently available commands.
 
 ## Basic installation
 
