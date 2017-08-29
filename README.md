@@ -1,6 +1,6 @@
-# DEPLOYER
+# How to setup a deployer bolt site
 
-This is an explanation on how to set up [deployer](https://deployer.org/) to manage a [bolt](https://bolt.cm/)
+This is a recipe on how to set up [deployer](https://deployer.org/) to manage a [bolt](https://bolt.cm/)
 
 ## setup
 
