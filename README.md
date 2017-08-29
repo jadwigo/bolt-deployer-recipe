@@ -25,7 +25,7 @@ The root directory (for Bolt 3 and up) usually is `/your/root/path/for/the/app/c
 
 ## Credentials
 
-Make sure you can ssh connect passwordless (using the account `your_shell_user`) to your `yourhost.com`, and that `your_shell_user` has passwordless sudo enabled (this is required by deployer).
+Make sure you can ssh connect passwordless (using the account `your_shell_user`) to your `yourhost.com`, and that `your_shell_user` has _passwordless sudo_ enabled **(this is required by deployer)**.
 
 Also make sure the database user `your_mysql_user` user is allowed to create mysql databases and tables in those databases, and perform mysqldump.
 
