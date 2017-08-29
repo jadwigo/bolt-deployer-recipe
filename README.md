@@ -47,6 +47,7 @@ example.com:
     application: your_app_name
     git_tty: true
     keep_releases: 10
+    cleanup_use_sudo: true
     shared_files: [ '.bolt.yml' ]
     writable_dirs: [ 'app/config', 'app/config/extensions', 'app/config/extensions/hierarchicalroutes', 'app/database', 'extensions', 'public', 'public/bolt-public', 'public/thumbs' ]
     allow_anonymous_stats: false
