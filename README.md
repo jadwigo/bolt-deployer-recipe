@@ -10,9 +10,9 @@ After installation of this receipe you can run `dep deploy` on the console of yo
 
 ### Rollback a deploy: dep rollback
 
-This receipe will also make database snapshots of each deployment, that will be rolled back on each `dep rollback`
+This receipe will also make database snapshots of each deployment, these will be rolled back on each `dep rollback`
 
-The database snaphots will not be cleaned up at the moment, so even older database snapshots than the `keep_releases` amount will stay available unless you remove them manually.
+The database snaphots will not be cleaned up at the moment, so older database snapshots than the `keep_releases` amount will stay available unless you remove them manually.
 
 ### Initial creation of shared files: dep bolt:init_shared
 
@@ -28,30 +28,34 @@ On the console you can run `dep list` to see the currently available commands.
 
 ### On your machine
 
-Install deployer from https://deployer.org/ on your machine.
-Install this repository with `git clone git@github.com:jadwigo/bolt-deployer-recipe.git my_directory` and `cs my_directory` to get into the correct place.
+First install deployer from https://deployer.org/ on your machine.
+Then run `git clone git@github.com:jadwigo/bolt-deployer-recipe.git my_directory` and `cd my_directory` to get into the correct place.
 
 Make sure the `hosts.yml`, `.my.cnf` and `deploy.php` files exist
 
-Optionally you can create a `.bolt.yml` and `config_local.yml` file in the same directory.
+Optionally create `.bolt.yml` and `config_local.yml` files in the same directory.
 
 ### On example.com
 
-On the first deploy the path `/your/root/path/for/the/app/` will be checked, and in that path the directories `.dep`, `releases` and `shared` will be created. 
+On the first deployment the path `/your/root/path/for/the/app/` will be checked, and in that path the directories `.dep`, `releases` and `shared` will be created. 
 
-The path `/your/root/path/for/the/app/current` will be symlinked to the latest release directory in `releases/#`.  
+The path `/your/root/path/for/the/app/current` will be symlinked to the latest release directory in `releases/{n}`.  
 
 The root directory (for Bolt 3 and up) usually is `/your/root/path/for/the/app/current/public`, so you need to prepare your host by setting up a webserver with the root of the website pointing to:  `/your/root/path/for/the/app/current/public`
 
 ## Credentials
 
-Make sure you can ssh connect passwordless (using the account `your_shell_user`) to your `yourhost.com`, and that `your_shell_user` has _passwordless sudo_ enabled **(this is required by deployer)**.
+It is probably best to create a specific deployment user account on the server and a specific backup administrator account in the database, as well as a normal mysql user for Bolt.
 
-Also set-up the account `your_shell_user` with the correct ssh keys to acces your git repository. See: https://deployer.org/docs/advanced/deploy-and-git for more information.
+Make sure you can use ssh to connect passwordless (using the account `your_shell_user`) to your `yourhost.com`, and that `your_shell_user` has _passwordless sudo_ enabled **(this is required by deployer)**.
 
-Also make sure the database user `your_mysql_user` user is allowed to create mysql databases and tables in those databases, and perform mysqldump.
+Set-up the account `your_shell_user` with the correct ssh keys to acces your git repository. See: https://deployer.org/docs/advanced/deploy-and-git for more information.
 
-It is probably best to create a specific deployment user account on the server and a specific backup administrator account in the database for these.
+Configure the database user `your_mysql_user` so that user is allowed to create and read tables in `your_db_name` on the server.
+
+Make sure the database user `your_mysql_backup_user` is allowed to perform mysqldump on `your_db_name` . 
+
+If you want to use the rollbacks, the user `your_mysql_backup_user` must be allowed to create mysql databases and tables on the server.
 
 ## Configuration files
 
@@ -136,7 +140,7 @@ extensions:
 
 ### shared/app/config/config_local.yml
 
-The `config_local.yml` should set the database credentials for your site. For the database suer you should have a separate account `your_mysql_user` that is different from `your_mysql_backup_user`.
+The `config_local.yml` sets the database credentials for your site. For the database user you should have a separate account `your_mysql_user` that is different from `your_mysql_backup_user`.
 
 ```yml
 database:
