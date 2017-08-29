@@ -120,6 +120,16 @@ paths:
 
 As above, the path `/your/root/path/for/the/app/` should be adapted for your situation.
 
+If you have custom bundles these need to be set in the `.bolt.yml` file as usual, so the `.bolt.yml` file might look a bit like this:
+
+```yml
+paths:
+  cache: /your/root/path/for/the/app/shared/cache
+  files: /your/root/path/for/the/app/shares/files
+extensions:
+  - Bolt\Extension\MyNamespace\MyBundle\MyBundleExtension
+```
+
 ### shared/app/config/config_local.yml
 
 The `config_local.yml` should set the database credentials for your site. For the database suer you should have a separate account `your_mysql_user` that is different from `your_mysql_backup_user`.
