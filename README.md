@@ -84,6 +84,7 @@ example.com:
       - 'public/bolt-public'
     allow_anonymous_stats: false
     deploy_path: /your/root/path/for/the/app
+    shared_files_path: /your/root/path/for/the/app/shared/files
     repository: git@gitlab.com:your/repository.git
     snapshots_dir: snapshots
     mysql_host: localhost
@@ -126,6 +127,8 @@ paths:
 ```
 
 As above, the path `/your/root/path/for/the/app/` should be adapted for your situation.
+
+If you use the custom files path `/your/root/path/for/the/app/shared/files` you need to set the same path in your hosts.yml
 
 If you have custom bundles these need to be set in the `.bolt.yml` file as usual, so the `.bolt.yml` file might look a bit like this:
 

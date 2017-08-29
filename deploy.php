@@ -158,10 +158,25 @@ task('bolt:localconfig', function() {
     });
 })->desc('Copy shared config files to current release.');
 
+task('bolt:filespath', function() {
+    if (!test("[ -d {{release_path}}/public/files ]")) {
+        writeln('<info>➤</info> Symlink shared files directory to current release.');
+        run('ln -s {{shared_files_path}} {{release_path}}/public/files', [ 'tty' => true ]);
+    } else {
+        writeln('<info>➤</info> Shared files folder is already set-up');
+    }
+})->desc('Symlink shared files directory to current release.');
+
+
 task('bolt:fix_access', function() {
     writeln('<info>➤</info> Fix access control');
     within('{{release_path}}', function() {
-        run('sudo chmod -R a+rw app/config public/thumbs', [ 'tty' => true ]);
+        if (test("[ -d app/config ]")) {
+            run('sudo chmod -R a+rw app/config', [ 'tty' => true ]);
+        }
+        if (test("[ -d public/thumbs ]")) {
+            run('sudo chmod -R a+rw public/thumbs', [ 'tty' => true ]);
+        }
     });
 })->desc('Set rw access control for all directories');
 
@@ -258,6 +273,7 @@ task('deploy', [
     'bolt:vendors',
     'bolt:extensions',
     'bolt:localconfig',
+    'bolt:filespath',
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
