@@ -109,20 +109,22 @@ task('bolt:init_shared', function() {
     }
     if (!test("[ -d {{deploy_path}}/shared/app/config ]")) {
         writeln('<info>➤</info> setting up shared config paths');
-        run("mkdir -p {{deploy_path}}/shared/app/config/extension");
+        run("mkdir -p {{deploy_path}}/shared/app/config/extensions");
         if (!test("[ -f {{deploy_path}}/shared/.bolt.yml ]")) {
             writeln('<info>➤</info> uploading .bolt.yml');
-            upload('shared/.bolt.yml', "{{deploy_path}}/shared/");
+            upload('shared/', "{{deploy_path}}/shared/");
         }
         if (!test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
             writeln('<info>➤</info> uploading config_local.yml');
             upload('shared/app/config/',"{{deploy_path}}/shared/app/config");
+        } else {
+            writeln('<info>➤</info> config_local.yml already exists');
         }
     } else {
         writeln('<info>➤</info> shared config paths already exist');
         if (!test("[ -f {{deploy_path}}/shared/.bolt.yml ]")) {
             writeln('<info>➤</info> uploading .bolt.yml');
-            upload('shared/.bolt.yml', "{{deploy_path}}/shared/");
+            upload('shared/', "{{deploy_path}}/shared/");
         } else {
             writeln('<info>➤</info> .bolt.yml already exists');
         }
