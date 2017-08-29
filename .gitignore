@@ -1,0 +1,5 @@
+.my.cnf
+.bolt.yml
+config_local.yml
+*_local.yml
+hosts.yml
