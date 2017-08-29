@@ -8,6 +8,8 @@ Run `dep deploy` on the console of your machin in the instalaltion directory of 
 
 This receipe will also make database snapshots of each deployment, that will be rolled back on each `dep rollback`
 
+The database snaphots will not be cleaned up at the moment, so even older database snapshots than the `keep_releases` amount will stay available unless you remove them manually.
+
 ## Basic installation
 
 ### On your machine
@@ -48,8 +50,15 @@ example.com:
     git_tty: true
     keep_releases: 10
     cleanup_use_sudo: true
-    shared_files: [ '.bolt.yml' ]
-    writable_dirs: [ 'app/config', 'app/config/extensions', 'app/config/extensions/hierarchicalroutes', 'app/database', 'extensions', 'public', 'public/bolt-public', 'public/thumbs' ]
+    shared_files: 
+      - '.bolt.yml'
+    writable_dirs:   
+      - 'app/config'
+      - 'app/config/extensions'
+      - 'app/database'
+      - 'extensions'
+      - 'public'
+      - 'public/bolt-public'
     allow_anonymous_stats: false
     deploy_path: /your/root/path/for/the/app
     repository: git@gitlab.com:your/repository.git
