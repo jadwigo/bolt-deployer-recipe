@@ -74,7 +74,6 @@ example.com:
     hostname: example.com
     user: your_shell_user
     stage: development
-    roles: site
     application: your_app_name
     git_tty: true
     keep_releases: 10
@@ -174,7 +173,6 @@ If you have multiple servers like development, testing, acceptance and productio
 .base: &base
   roles: app
   user: your_shell_user
-  roles: site
   application: your_app_name
   git_tty: true
   keep_releases: 10
