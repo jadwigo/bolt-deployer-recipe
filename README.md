@@ -80,6 +80,9 @@ example.com:
     cleanup_use_sudo: true
     shared_files: 
       - '.bolt.yml'
+    keep_files: 
+      - 'app/config/menu.yml'
+      - 'app/config/taxonomy.yml'
     writable_dirs:   
       - 'app/config'
       - 'app/config/extensions'
@@ -97,6 +100,8 @@ example.com:
 ```
 
 Replace the `example.com`, `your_shell_user`, `your_app_name`, `/your/root/path/for/the/app/`, `git@github.com:your/repository.git` and `your_db_name` with your own variables.
+
+The files in `keep_files` will be copied from the old release to the new release, so things that end-users will change in the site are copied to each new site.
 
 For more info, see https://deployer.org/docs/hosts#inventory-file
 
@@ -179,6 +184,9 @@ If you have multiple servers like development, testing, acceptance and productio
   cleanup_use_sudo: true
   shared_files: 
     - '.bolt.yml'
+  keep_files: 
+    - 'app/config/menu.yml'
+    - 'app/config/taxonomy.yml'
   writable_dirs:   
     - 'app/config'
     - 'app/config/extensions'
