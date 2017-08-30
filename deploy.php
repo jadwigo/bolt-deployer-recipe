@@ -146,26 +146,27 @@ task('bolt:extensions', function() {
 })->desc('Install extension updates');
 
 task('bolt:dbupdate', function() {
-    run('cd {{release_path}} && {{bin/nut}} database:update');
+    // running app/nut database update in release folder
+    run('cd {{release_path}} && {{bin/nut}} database:update', [ 'tty' => true ]);
 })->desc('Run database updates');
 
 task('bolt:localconfig', function() {
-    writeln('<info>➤</info> Copy bolt localconfig');
+    // Copy bolt localconfig
     within('{{deploy_path}}', function() {
         if (test("[ -f {{deploy_path}}/shared/app/config/config_local.yml ]")) {
-            run('cp {{deploy_path}}/shared/app/config/config_local.yml {{release_path}}/app/config/.', [ 'tty' => true ]);
+            run('cp {{deploy_path}}/shared/app/config/config_local.yml {{release_path}}/app/config/.');
         }
         if (test("[ -d {{deploy_path}}/shared/app/config/extensions ]")) {
-            run('cp {{deploy_path}}/shared/app/config/extensions/*_local.yml {{release_path}}/app/config/extensions/.', [ 'tty' => true ]);
+            run('cp {{deploy_path}}/shared/app/config/extensions/*_local.yml {{release_path}}/app/config/extensions/.');
         }
-        run('chmod -R a+rw {{release_path}}/app/config', [ 'tty' => true ]);
+        run('chmod -R a+rw {{release_path}}/app/config');
     });
 })->desc('Copy shared config files to current release.');
 
 task('bolt:filespath', function() {
     if (!test("[ -d {{release_path}}/public/files ]")) {
-        writeln('<info>➤</info> Symlink shared files directory to current release.');
-        run('ln -s {{shared_files_path}} {{release_path}}/public/files', [ 'tty' => true ]);
+        // Symlink shared files directory to current release
+        run('ln -s {{shared_files_path}} {{release_path}}/public/files');
     } else {
         writeln('<info>➤</info> Shared files folder is already set-up');
     }
@@ -176,17 +177,16 @@ task('bolt:keepfiles', function() {
     $release_path = get('release_path');
     $current_path = get('current_path');
     if($release_path != $current_path) {
-        writeln('<info>➤</info> Copying some files along releases');
+        // Copying keep_files along releases
         foreach($keep_files as $currentfile) {
             set('currentfile', $currentfile);
-            //writeln('cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
             run('cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
         }
     } else {
         writeln('<info>➤</info> Not copying files along releases.');
         foreach($keep_files as $currentfile) {
             set('currentfile', $currentfile);
-            writeln('not doing this: cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
+            writeln('not doing this: cp {{current_path}}/{{currentfile}} newrelease/{{currentfile}}');
         }
     }
 
@@ -194,7 +194,7 @@ task('bolt:keepfiles', function() {
 
 
 task('bolt:fix_access', function() {
-    writeln('<info>➤</info> Fix access control');
+    // Fix access control
     within('{{release_path}}', function() {
         if (test("[ -d app/config ]")) {
             run('sudo chmod -R a+rw app/config', [ 'tty' => true ]);
@@ -226,7 +226,7 @@ task('db:test', function () {
 })->desc('Show database snapshot');
 
 task('db:snapshot', function () {
-    writeln('<info>➤</info> Database snapshot');
+    // Database snapshot
     $backup_path = get('backup_path');
     $releases_list = get('releases_list');
     set('releases_list', $releases_list);
@@ -297,8 +297,8 @@ task('deploy', [
     'bolt:extensions',
     'bolt:localconfig',
     'bolt:filespath',
-    'bolt:dbupdate',
     'bolt:keepfiles',
+    'bolt:dbupdate',
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
