@@ -2,23 +2,29 @@
 
 This is a recipe on how to set up [deployer](https://deployer.org/) to manage a [bolt](https://bolt.cm/) site.
 
+For the website itself you need a git repository with your Bolt 3 site.
+
+To use deployer you must first install deployer, clone this repository and set up one or more servers. 
+
+On the server you need access through SSH, a webserver like Nginx or Apache and a database server like Mysql.
+
 ## Basic usage
-
-### Deploy a site: dep deploy
-
-After installation of this receipe you can run `dep deploy` on the console of your machine from the current installation directory of this recipe.
-
-### Rollback a deploy: dep rollback
-
-This receipe will also make database snapshots of each deployment, these will be rolled back on each `dep rollback`
-
-The database snaphots will not be cleaned up at the moment, so older database snapshots than the `keep_releases` amount will stay available unless you remove them manually.
 
 ### Initial creation of shared files: dep bolt:init_shared
 
 You can setup the shared files needed for a basic bolt installation by running `dep bolt:init_shared`. This will copy `.bolt.yml` and `config_local.yml` to the correct place on the server.
 
 You can also create these files manually on your server.
+
+### Deploy a site: dep deploy
+
+After installation of this receipe you can run `dep deploy` on the console of your machine from the current installation directory of this recipe. This command will deploy the `development` stage by default.
+
+### Rollback a deploy: dep rollback
+
+This receipe will also make database snapshots of each deployment, these will be rolled back on each `dep rollback`
+
+The database snaphots will not be cleaned up at the moment, so older database snapshots than the `keep_releases` amount will stay available unless you remove them manually.
 
 ### More commands
 
@@ -67,7 +73,7 @@ Your `hosts.yml` should look something like this:
 example.com:
     hostname: example.com
     user: your_shell_user
-    stage: production
+    stage: development
     roles: site
     application: your_app_name
     git_tty: true
@@ -159,3 +165,61 @@ The local configuration will be copied to the current release, so credentials do
 ### Local extension configuration
 
 All local configuration files following the pattern `config/extensions/{extension}.{namespace}_local.yml` will be copied to the current release, so credentials do not need to be stored in git repositories.
+
+## Deploying to multiple stages for acceptance and production
+
+If you have multiple servers like development, testing, acceptance and production you can add multiple stages to your `hosts.yml` inventory.
+
+```yml
+.base: &base
+  roles: app
+  user: your_shell_user
+  roles: site
+  application: your_app_name
+  git_tty: true
+  keep_releases: 10
+  cleanup_use_sudo: true
+  shared_files: 
+    - '.bolt.yml'
+  writable_dirs:   
+    - 'app/config'
+    - 'app/config/extensions'
+    - 'app/database'
+    - 'extensions'
+    - 'public'
+    - 'public/bolt-public'
+  allow_anonymous_stats: false
+  deploy_path: /your/root/path/for/the/app
+  shared_files_path: /your/root/path/for/the/app/shared/files
+  repository: git@gitlab.com:your/repository.git
+  snapshots_dir: snapshots
+  mysql_host: localhost
+  mysql_db: your_db_name
+
+development.example.com:
+  <<: *base  
+  hostname: development.example.com
+  stage: development
+  deploy_path: /var/www/development
+  mysql_host: localhost
+  mysql_db: your_dev_db_name
+
+acceptance.example.com:
+  <<: *base  
+  hostname: another.server.example.com
+  stage: acceptance
+  deploy_path: /var/www/acceptance
+  mysql_host: localhost
+  mysql_db: your_acceptance_db_name
+
+example.com:
+  <<: *base
+  hostname: example.com
+  stage: production
+  deploy_path: /var/www/example
+  mysql_host: localhost
+  mysql_db: your_production_db_name
+
+```
+
+The deployment of the sites goes to the `development` stage by default. For the other stages you can invoke deployment with `dep deploy acceptance` or `dep deploy production`. If you add multiple hosts to one environment, the deployment will go to all the servers in the chosen stage.

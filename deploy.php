@@ -16,7 +16,7 @@ if (!file_exists (__DIR__ . '/.my.cnf')) {
  */
 inventory('hosts.yml');
 
-set('default_stage', 'production');
+set('default_stage', 'development');
 
 /**
  * Custom bins.
