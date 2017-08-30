@@ -39,6 +39,7 @@ set('bin/mysqldump', function () {
 set('bin/mysqladmin', function () {
     return locateBinaryPath('mysqladmin');
 });
+set('bin/nut', '{{bin/php}} app/nut');
 
 
 /**
@@ -96,7 +97,6 @@ task('test:past', function () {
     }
 })->desc('Show info about past releases');
 
-
 /**
  * Bolt specific Tasks
  */
@@ -145,6 +145,10 @@ task('bolt:extensions', function() {
     run('cd {{release_path}}/extensions && {{bin/composer}} {{composer_options}} --ignore-platform-reqs ');
 })->desc('Install extension updates');
 
+task('bolt:dbupdate', function() {
+    run('cd {{release_path}} && {{bin/nut}} database:update');
+})->desc('Run database updates');
+
 task('bolt:localconfig', function() {
     writeln('<info>➤</info> Copy bolt localconfig');
     within('{{deploy_path}}', function() {
@@ -166,6 +170,27 @@ task('bolt:filespath', function() {
         writeln('<info>➤</info> Shared files folder is already set-up');
     }
 })->desc('Symlink shared files directory to current release.');
+
+task('bolt:keepfiles', function() {
+    $keep_files = get('keep_files');
+    $release_path = get('release_path');
+    $current_path = get('current_path');
+    if($release_path != $current_path) {
+        writeln('<info>➤</info> Copying some files along releases');
+        foreach($keep_files as $currentfile) {
+            set('currentfile', $currentfile);
+            //writeln('cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
+            run('cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
+        }
+    } else {
+        writeln('<info>➤</info> Not copying files along releases.');
+        foreach($keep_files as $currentfile) {
+            set('currentfile', $currentfile);
+            writeln('not doing this: cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
+        }
+    }
+
+})->desc('Keep some files along releases');
 
 
 task('bolt:fix_access', function() {
@@ -199,7 +224,6 @@ task('db:test', function () {
     set('dumpfile', get('backup_path') . '/' . get('current_release') .'.sql');
     writeln('<info>➤</info> current dumpfile: {{dumpfile}}');
 })->desc('Show database snapshot');
-
 
 task('db:snapshot', function () {
     writeln('<info>➤</info> Database snapshot');
@@ -259,7 +283,6 @@ task('db:list', function () {
     });
 })->desc('List database snapshots');
 
-
 /**
  * Main task
  */
@@ -274,6 +297,8 @@ task('deploy', [
     'bolt:extensions',
     'bolt:localconfig',
     'bolt:filespath',
+    'bolt:dbupdate',
+    'bolt:keepfiles',
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
