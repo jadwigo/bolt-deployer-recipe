@@ -178,9 +178,13 @@ task('bolt:keepfiles', function() {
     $current_path = get('current_path');
     if($release_path != $current_path) {
         // Copying keep_files along releases
-        foreach($keep_files as $currentfile) {
-            set('currentfile', $currentfile);
-            run('cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
+        if (test("[ -d {{current_path}} ]")) {
+            foreach($keep_files as $currentfile) {
+                set('currentfile', $currentfile);
+                run('cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
+            }
+        } else {
+            writeln('no curent directory: {{current_path}}');
         }
     } else {
         writeln('<info>➤</info> Not copying files along releases.');
