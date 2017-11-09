@@ -170,7 +170,13 @@ task('bolt:filespath', function() {
     } else {
         writeln('<info>➤</info> Shared files folder is already set-up');
     }
-})->desc('Symlink shared files directory to current release.');
+    if (!test("[ -d {{release_path}}/public/thumbs ]")) {
+        // Symlink thumb files directory to current release
+        run('ln -s {{thumb_files_path}} {{release_path}}/public/thumbs');
+    } else {
+        writeln('<info>➤</info> Shared files folder is already set-up');
+    }
+})->desc('Symlink shared files and thumbnail directory to current release.');
 
 task('bolt:keepfiles', function() {
     $keep_files = get('keep_files');
@@ -179,9 +185,13 @@ task('bolt:keepfiles', function() {
     if($release_path != $current_path) {
         // Copying keep_files along releases
         if (test("[ -d {{current_path}} ]")) {
-            foreach($keep_files as $currentfile) {
-                set('currentfile', $currentfile);
-                run('cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}');
+            if (!empty($keep_files)) {
+                foreach ($keep_files as $currentfile) {
+                    set('currentfile', $currentfile);
+                    run(
+                      'cp {{current_path}}/{{currentfile}} {{release_path}}/{{currentfile}}'
+                    );
+                }
             }
         } else {
             writeln('no curent directory: {{current_path}}');
@@ -257,7 +267,7 @@ task('db:restore', function () {
             run("{{bin/mysql}} --defaults-extra-file={{backup_path}}/.my.cnf -e 'CREATE DATABASE IF NOT EXISTS {{mysql_db}}_temp;'");
             // import everything into the temporary database
             run('{{bin/mysql}} --defaults-extra-file={{backup_path}}/.my.cnf {{mysql_db}}_temp < {{dumpfile}}');
-            
+
             $tables = run('{{bin/mysql}} --defaults-extra-file={{backup_path}}/.my.cnf -B -N -e "SHOW TABLES;" {{mysql_db}}_temp');
             $tables = explode("\n", $tables);
             foreach($tables as $table) {
