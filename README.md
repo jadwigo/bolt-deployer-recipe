@@ -41,6 +41,10 @@ Make sure the `hosts.yml`, `.my.cnf` and `deploy.php` files exist
 
 Optionally create `shared/.bolt.yml` and `shared/app/config/config_local.yml` files.
 
+### Requirements
+
+You also need the `mysqldump` command on the target machine - if it is not available the database snapshots won't work and must be disabled.
+
 ### On example.com
 
 On the first deployment the path `/your/root/path/for/the/app/` will be checked, and in that path the directories `.dep`, `releases` and `shared` will be created. 
