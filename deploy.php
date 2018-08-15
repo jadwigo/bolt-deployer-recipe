@@ -297,6 +297,20 @@ task('db:list', function () {
     });
 })->desc('List database snapshots');
 
+
+task('hosts', [
+  'config:hosts'
+])->desc('Show all configured hosts and builds');
+
+task('deploy:bolt', [
+  'bolt:vendors',
+  'bolt:extensions',
+  'bolt:localconfig',
+  'bolt:filespath',
+  'bolt:keepfiles',
+  'bolt:dbupdate'
+])->desc('Run bolt specific deploy tasks');
+
 /**
  * Main task
  */
@@ -307,12 +321,7 @@ task('deploy', [
     'deploy:release',
     'deploy:update_code',
     'deploy:shared',
-    'bolt:vendors',
-    'bolt:extensions',
-    'bolt:localconfig',
-    'bolt:filespath',
-    'bolt:keepfiles',
-    'bolt:dbupdate',
+    'deploy:bolt',
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
