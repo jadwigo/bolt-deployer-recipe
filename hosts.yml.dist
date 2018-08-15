@@ -20,7 +20,7 @@
   allow_anonymous_stats: false
   deploy_path: /your/root/path/for/the/app
   shared_files_path: /your/root/path/for/the/app/shared/files
-  repository: git@gitlab.com:your/repository.git
+  repository: git@github.com:jadwigo/isolated-reality.git
   snapshots_dir: snapshots
   mysql_host: localhost
   mysql_db: your_db_name
