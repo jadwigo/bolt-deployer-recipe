@@ -5,11 +5,13 @@ namespace Deployer;
 require 'recipe/common.php';
 
 if (!file_exists (__DIR__ . '/hosts.yml')) {
-  die('Please create "' . __DIR__ . '/hosts.yml" before continuing.' . "\n");
+  die('Please create "' . __DIR__ . '/hosts.yml" before continuing.' . "\n" .
+      ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedboltyml' . "\n");
 }
 
 if (!file_exists (__DIR__ . '/.my.cnf')) {
-  die('Please create "' . __DIR__ . '/.my.cnf" before continuing.' . "\n");
+  die('Please create "' . __DIR__ . '/.my.cnf" before continuing.' . "\n" .
+      ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#mycnf' . "\n");
 }
 
 /**
@@ -23,29 +25,29 @@ set('default_branch', 'development');
  */
 inventory('hosts.yml');
 
-set('branch', function () {
+set('branch', function() {
   return input()->getOption('branch') ?: get('default_branch');
 });
 
 /**
  * Custom bins.
  */
-set('bin/bash', function () {
+set('bin/bash', function() {
     return locateBinaryPath('bash');
 });
-set('bin/tar', function () {
+set('bin/tar', function() {
     return locateBinaryPath('tar');
 });
-set('bin/gzip', function () {
+set('bin/gzip', function() {
     return locateBinaryPath('gzip');
 });
-set('bin/mysql', function () {
+set('bin/mysql', function() {
     return locateBinaryPath('mysql');
 });
-set('bin/mysqldump', function () {
+set('bin/mysqldump', function() {
     return locateBinaryPath('mysqldump');
 });
-set('bin/mysqladmin', function () {
+set('bin/mysqladmin', function() {
     return locateBinaryPath('mysqladmin');
 });
 set('bin/nut', '{{bin/php}} app/nut');
@@ -54,9 +56,9 @@ set('bin/nut', '{{bin/php}} app/nut');
 /**
  * Return backup path.
  */
-set('backup_path', function () {
+set('backup_path', function() {
     if (!test("[ -d {{deploy_path}}/{{snapshots_dir}} ]")) {
-        within("{{deploy_path}}", function () {
+        within("{{deploy_path}}", function() {
             writeln('<info>➤</info> setting up snapshots: {{snapshots_dir}}');
             run("mkdir {{deploy_path}}/{{snapshots_dir}}");
             upload('.my.cnf', '{{deploy_path}}/{{snapshots_dir}}/');
@@ -80,7 +82,7 @@ set('backup_path', function () {
 /**
  * Custom Tasks
  */
-task('test:current', function () {
+task('test:current', function() {
     writeln('<info>➤</info> Current deploy path is {{deploy_path}}');
     writeln('<info>➤</info> Current release path is {{release_path}}');
     $releases_list = get('releases_list');
@@ -94,7 +96,7 @@ task('test:current', function () {
     writeln('<info>➤</info> Next release name is {{release_name}}');
 })->desc('Show info about current releases.');
 
-task('test:past', function () {
+task('test:past', function() {
     $releases_list = get('releases_list');
     set('releases_list', $releases_list);
     if(count($releases_list)>1) {
@@ -111,10 +113,12 @@ task('test:past', function () {
  */
 task('bolt:init_shared', function() {
     if (!file_exists (__DIR__ . '/shared/.bolt.yml')) {
-      die('Please create "' . __DIR__ . '/shared/.bolt.yml" before continuing.' . "\n");
+      die('Please create "' . __DIR__ . '/shared/.bolt.yml" before continuing.' . "\n" .
+          ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedboltyml' . "\n");
     }
     if (!file_exists (__DIR__ . '/shared/app/config/config_local.yml')) {
-      die('Please create "' . __DIR__ . '/shared/app/config/config_local.yml" before continuing.' . "\n");
+      die('Please create "' . __DIR__ . '/shared/app/config/config_local.yml" before continuing.' . "\n" .
+          ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedappconfigconfig_localyml' . "\n");
     }
     if (!test("[ -d {{deploy_path}}/shared/app/config ]")) {
         writeln('<info>➤</info> setting up shared config paths');
@@ -212,7 +216,6 @@ task('bolt:keepfiles', function() {
             writeln('not doing this: cp {{current_path}}/{{currentfile}} newrelease/{{currentfile}}');
         }
     }
-
 })->desc('Keep some files along releases');
 
 
@@ -231,7 +234,7 @@ task('bolt:fix_access', function() {
 /**
  * Database tasks - test, snapshot and restore
  */
-task('db:test', function () {
+task('db:test', function() {
     writeln('<info>➤</info> db test');
     writeln('<info>➤</info> release path: {{current_path}}');
     $backup_path = get('backup_path');
@@ -248,7 +251,7 @@ task('db:test', function () {
     writeln('<info>➤</info> current dumpfile: {{dumpfile}}');
 })->desc('Show database snapshot');
 
-task('db:snapshot', function () {
+task('db:snapshot', function() {
     // Database snapshot
     $backup_path = get('backup_path');
     $releases_list = get('releases_list');
@@ -262,7 +265,7 @@ task('db:snapshot', function () {
     run('{{bin/mysqldump}} --defaults-extra-file={{backup_path}}/.my.cnf {{mysql_db}} > {{dumpfile}}');
 })->desc('Run a database snapshot for the current release');
 
-task('db:restore', function () {
+task('db:restore', function() {
     // TODO set the dumpfile filename to something with the _PREVIOUS_ release
     $backup_path = get('backup_path');
     $releases_list = get('releases_list');
@@ -299,9 +302,9 @@ task('db:restore', function () {
     }
 })->desc('Restore the current database from a snapshot');
 
-task('db:list', function () {
+task('db:list', function() {
     writeln('<info>➤</info> list {{release_path}}');
-    within('{{deploy_path}}', function () {
+    within('{{deploy_path}}', function() {
         writeln('<info>➤</info> list {{release_path}}');
     });
 })->desc('List database snapshots');
