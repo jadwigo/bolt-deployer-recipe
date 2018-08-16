@@ -106,13 +106,13 @@ task('bolt:requirements', function() {
     $errors = false;
     if (!file_exists (__DIR__ . '/hosts.yml')) {
         writeln('<fg=red>✘</fg=red><fg=yellow> Please create "' . __DIR__ . '/hosts.yml" before continuing.</fg=yellow>');
-        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedboltyml');
+        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#hostsyml');
         $errors = true;
     }
 
     if (!file_exists (__DIR__ . '/.my.cnf')) {
         writeln('<fg=red>✘</fg=red><fg=yellow> Please create "' . __DIR__ . '/.my.cnf" before continuing.</fg=yellow>');
-        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#mycnf');
+        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#mycnf-credentials');
         $errors = true;
     }
 
@@ -124,7 +124,7 @@ task('bolt:requirements', function() {
 
     if (!file_exists (__DIR__ . '/shared/app/config/config_local.yml')) {
         writeln('<fg=red>✘</fg=red><fg=yellow> Please create "' . __DIR__ . '/shared/app/config/config_local.yml" before continuing.</fg=yellow>');
-        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedappconfigconfig_localyml');
+        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedappconfigconfig_localyml-site-credentials');
         $errors = true;
     }
 
