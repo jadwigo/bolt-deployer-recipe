@@ -4,16 +4,6 @@ namespace Deployer;
 
 require 'recipe/common.php';
 
-if (!file_exists (__DIR__ . '/hosts.yml')) {
-  die('Please create "' . __DIR__ . '/hosts.yml" before continuing.' . "\n" .
-      ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedboltyml' . "\n");
-}
-
-if (!file_exists (__DIR__ . '/.my.cnf')) {
-  die('Please create "' . __DIR__ . '/.my.cnf" before continuing.' . "\n" .
-      ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#mycnf' . "\n");
-}
-
 /**
  * Set defaults
  */
@@ -108,18 +98,47 @@ task('test:past', function() {
     }
 })->desc('Show info about past releases');
 
+
+/**
+ * Shortcut to show configured hosts
+ */
+task('bolt:requirements', function() {
+    $errors = false;
+    if (!file_exists (__DIR__ . '/hosts.yml')) {
+        writeln('<fg=red>✘</fg=red><fg=yellow> Please create "' . __DIR__ . '/hosts.yml" before continuing.</fg=yellow>');
+        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedboltyml');
+        $errors = true;
+    }
+
+    if (!file_exists (__DIR__ . '/.my.cnf')) {
+        writeln('<fg=red>✘</fg=red><fg=yellow> Please create "' . __DIR__ . '/.my.cnf" before continuing.</fg=yellow>');
+        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#mycnf');
+        $errors = true;
+    }
+
+    if (!file_exists (__DIR__ . '/shared/.bolt.yml')) {
+        writeln('<fg=red>✘</fg=red><fg=yellow> Please create "' . __DIR__ . '/shared/.bolt.yml" before continuing.</fg=yellow>');
+        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedboltyml');
+        $errors = true;
+    }
+
+    if (!file_exists (__DIR__ . '/shared/app/config/config_local.yml')) {
+        writeln('<fg=red>✘</fg=red><fg=yellow> Please create "' . __DIR__ . '/shared/app/config/config_local.yml" before continuing.</fg=yellow>');
+        writeln('<fg=red>✘</fg=red> More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedappconfigconfig_localyml');
+        $errors = true;
+    }
+
+    if($errors === true) {
+        invoke('deploy:failed');
+    } else {
+        writeln('<info>➤</info> all local required files exist.');
+    }
+})->desc('Show all configured hosts and builds');
+
 /**
  * Bolt specific Tasks
  */
 task('bolt:init_shared', function() {
-    if (!file_exists (__DIR__ . '/shared/.bolt.yml')) {
-      die('Please create "' . __DIR__ . '/shared/.bolt.yml" before continuing.' . "\n" .
-          ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedboltyml' . "\n");
-    }
-    if (!file_exists (__DIR__ . '/shared/app/config/config_local.yml')) {
-      die('Please create "' . __DIR__ . '/shared/app/config/config_local.yml" before continuing.' . "\n" .
-          ' - More info: https://github.com/jadwigo/bolt-deployer-recipe/blob/master/README.md#sharedappconfigconfig_localyml' . "\n");
-    }
     if (!test("[ -d {{deploy_path}}/shared/app/config ]")) {
         writeln('<info>➤</info> setting up shared config paths');
         run("mkdir -p {{deploy_path}}/shared/app/config/extensions");
@@ -321,12 +340,13 @@ task('hosts', [
  * The bolt specific steps of deployment
  */
 task('deploy:bolt', [
-  'bolt:vendors',
-  'bolt:extensions',
-  'bolt:localconfig',
-  'bolt:filespath',
-  'bolt:keepfiles',
-  'bolt:dbupdate'
+    'bolt:requirements',
+    'bolt:vendors',
+    'bolt:extensions',
+    'bolt:localconfig',
+    'bolt:filespath',
+    'bolt:keepfiles',
+    'bolt:dbupdate'
 ])->desc('Run bolt specific deploy tasks');
 
 /**
