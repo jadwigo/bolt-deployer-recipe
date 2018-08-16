@@ -160,7 +160,8 @@ task('bolt:extensions', function() {
 
 task('bolt:dbupdate', function() {
     // running app/nut database update in release folder
-    run('cd {{release_path}} && {{bin/nut}} database:update', [ 'tty' => true ]);
+    // run('cd {{release_path}} && {{bin/nut}} database:update', [ 'tty' => true ]);
+    run('cd {{release_path}} && {{bin/nut}} database:update --no-interactive');
 })->desc('Run database updates');
 
 task('bolt:localconfig', function() {
