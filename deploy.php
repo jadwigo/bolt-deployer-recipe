@@ -1,4 +1,5 @@
 <?php
+
 namespace Deployer;
 
 require 'recipe/common.php';
@@ -16,7 +17,6 @@ if (!file_exists (__DIR__ . '/.my.cnf')) {
  */
 set('default_stage', 'development');
 set('default_branch', 'development');
-
 
 /**
  * Hosts
@@ -226,10 +226,10 @@ task('bolt:fix_access', function() {
             run('sudo chmod -R a+rw public/thumbs', [ 'tty' => true ]);
         }
     });
-})->desc('Set rw access control for all directories');
+})->desc('Set rw access control for config and thumbs directories');
 
 /**
- * Database tasks
+ * Database tasks - test, snapshot and restore
  */
 task('db:test', function () {
     writeln('<info>➤</info> db test');
@@ -306,11 +306,16 @@ task('db:list', function () {
     });
 })->desc('List database snapshots');
 
-
+/**
+ * Shortcut to show configured hosts
+ */
 task('hosts', [
   'config:hosts'
 ])->desc('Show all configured hosts and builds');
 
+/**
+ * The bolt specific steps of deployment
+ */
 task('deploy:bolt', [
   'bolt:vendors',
   'bolt:extensions',
@@ -336,9 +341,27 @@ task('deploy', [
     'cleanup',
 ])->desc('Deploy your project');
 
+/**
+ * Trigger success after deploy
+ */
 after('deploy', 'success');
+
+/**
+ * Unlock and continue after failed deploy
+ */
 after('deploy:failed', 'deploy:unlock');
 
+/**
+ * Inject database snapshot after lock has activated
+ */
 after('deploy:lock', 'db:snapshot');
+
+/**
+ * Rollback needs writable directories
+ */
 before('rollback', 'bolt:fix_access');
+
+/**
+ * Reset the database to the previous version after rollback
+ */
 after('rollback', 'db:restore');
