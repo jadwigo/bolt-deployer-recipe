@@ -12,11 +12,20 @@ if (!file_exists (__DIR__ . '/.my.cnf')) {
 }
 
 /**
+ * Set defaults
+ */
+set('default_stage', 'development');
+set('default_branch', 'development');
+
+
+/**
  * Hosts
  */
 inventory('hosts.yml');
 
-set('default_stage', 'development');
+set('branch', function () {
+  return input()->getOption('branch') ?: get('default_branch');
+});
 
 /**
  * Custom bins.
