@@ -359,11 +359,15 @@ task('deploy', [
     'deploy:release',
     'deploy:update_code',
     'deploy:shared',
-    'deploy:bolt',
     'deploy:symlink',
     'deploy:unlock',
     'cleanup',
 ])->desc('Deploy your project');
+
+/**
+ * Add bolt deploy after deploy:shared
+ */
+after('deploy:shared', 'deploy:bolt');
 
 /**
  * Trigger success after deploy
