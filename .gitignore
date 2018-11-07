@@ -3,3 +3,4 @@
 config_local.yml
 *_local.yml
 hosts.yml
+.idea

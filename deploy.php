@@ -369,6 +369,26 @@ task('deploy:bolt', [
 ])->desc('Run bolt specific deploy tasks');
 
 /**
+ * Shortcut to show configured hosts
+ */
+task('hosts', [
+  'config:hosts'
+])->desc('Show all configured hosts and builds');
+
+/**
+ * The bolt specific steps of deployment
+ */
+task('deploy:bolt', [
+    'bolt:requirements',
+    'bolt:vendors',
+    'bolt:extensions',
+    'bolt:localconfig',
+    'bolt:filespath',
+    'bolt:keepfiles',
+    'bolt:dbupdate'
+])->desc('Run bolt specific deploy tasks');
+
+/**
  * Main task
  */
 task('deploy', [

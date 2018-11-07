@@ -1,0 +1,50 @@
+.base: &base
+  roles: app
+  user: your_shell_user
+  application: your_app_name
+  git_tty: true
+  keep_releases: 10
+  cleanup_use_sudo: true
+  shared_files:
+    - '.bolt.yml'
+  keep_files:
+    - 'app/config/menu.yml'
+    - 'app/config/taxonomy.yml'
+  writable_dirs:
+    - 'app/config'
+    - 'app/config/extensions'
+    - 'app/database'
+    - 'extensions'
+    - 'public'
+    - 'public/bolt-public'
+  allow_anonymous_stats: false
+  deploy_path: /your/root/path/for/the/app
+  shared_files_path: /your/root/path/for/the/app/shared/files
+  repository: git@github.com:jadwigo/isolated-reality.git
+  snapshots_dir: snapshots
+  mysql_host: localhost
+  mysql_db: your_db_name
+
+test.example.com:
+  <<: *base
+  hostname: test.example.com
+  stage: test
+  deploy_path: /var/www/development
+  mysql_host: localhost
+  mysql_db: your_test_db_name
+
+acceptance.example.com:
+  <<: *base
+  hostname: another.server.example.com
+  stage: acceptance
+  deploy_path: /var/www/acceptance
+  mysql_host: localhost
+  mysql_db: your_acceptance_db_name
+
+example.com:
+  <<: *base
+  hostname: example.com
+  stage: production
+  deploy_path: /var/www/example
+  mysql_host: localhost
+  mysql_db: your_production_db_name
